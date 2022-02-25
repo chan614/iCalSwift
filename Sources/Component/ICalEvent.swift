@@ -1,0 +1,286 @@
+//
+//  ICalEvent.swift
+//
+//
+//
+
+import Foundation
+
+/// Provides a grouping of component properties that
+/// describes an event.
+///
+/// See https://tools.ietf.org/html/rfc5545#section-3.6.1
+public struct ICalEvent: VComponent {
+    public let component = ICalComponent.event
+    
+    /// In the case of an iCalendar object that specifies a
+    /// "METHOD" property, this property specifies the date and time that
+    /// the instance of the iCalendar object was created.  In the case of
+    /// an iCalendar object that doesn't specify a "METHOD" property, this
+    /// property specifies the date and time that the information
+    /// associated with the calendar component was last revised in the
+    /// calendar store.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.7.2
+    public var dtstamp: Date
+    
+    /// This property defines the persistent, globally unique
+    /// identifier for the calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.4.7
+    public var uid: String
+    
+    /// This property defines the access classification for a
+    /// calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.3
+    public var classification: String?
+    
+    /// This property specifies the date and time that the calendar
+    /// information was created by the calendar user agent in the calendar
+    /// store.
+    ///
+    /// Note: This is analogous to the creation date and time for a
+    /// file in the file system.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.7.1
+    public var created: Date?
+    
+    /// This property specifies when the calendar component begins.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.4
+    public var description: String?
+    
+    /// This property specifies when the calendar component begins.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.4
+    public var dtstart: ICalendarDate?
+    
+    /// This property specifies the date and time that the
+    /// information associated with the calendar component was last
+    /// revised in the calendar store.
+    ///
+    /// Note: This is analogous to the modification date and time for a
+    /// file in the file system.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.7.3
+    public var lastModified: Date?
+    
+    /// This property defines the intended venue for the activity
+    /// for the activity.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.7
+    public var location: String?
+    
+    /// This property defines the organizer for a calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.4.3
+    public var organizer: String? // TODO: Add more structure
+    
+    /// This property defines the relative priority for a calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.9
+    public var priority: Int?
+    
+    /// This property defines the revision sequence number of the
+    /// calendar component within a sequence of revisions.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.7.4
+    public var seq: Int?
+    
+    /// This property defines the overall status or confirmation
+    /// for the calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.11
+    public var status: String?
+    
+    /// This property defines a short summary or subject for the
+    /// calendar component.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.12
+    public var summary: String?
+    
+    /// This property defines whether or not an event is
+    /// transparent to busy time searches.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.7
+    public var transp: String?
+    
+    /// This property defines a Uniform Resource Locator (URL)
+    /// associated with the iCalendar object.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.4.6
+    public var url: URL?
+    
+    // Mutually exclusive specifications of end date
+    /// This property specifies the date and time that a calendar
+    /// component ends.
+    ///
+    /// Must have the same 'ignoreTime'-value as tstart.
+    /// Mutually exclusive to 'due'.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.2
+    public var dtend: ICalendarDate? {
+        willSet { duration = nil }
+    }
+    
+    /// This property specifies a positive duration of time.
+    ///
+    /// Mutually exclusive to 'due'.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.5
+    public var duration: ICalendarDuration? {
+        willSet { dtend = nil }
+    }
+    
+    /// This property is used in conjunction with the "UID" and
+    /// "SEQUENCE" properties to identify a specific instance of a
+    /// recurring "VEVENT", "VTODO", or "VJOURNAL" calendar component.
+    /// The property value is the original value of the "DTSTART" property
+    /// of the recurrence instance.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.4.4
+    public var recurrenceID: Date?
+    
+    /// This property defines a rule or repeating pattern for
+    /// recurring events, to-dos, journal entries, or time zone
+    /// definitions.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.3
+    public var rrule: ICalRule?
+    
+    /// This property defines the list of DATE-TIME values for
+    /// recurring events, to-dos, journal entries, or time zone
+    /// definitions.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.2
+    public var rdates: [Date]?
+    
+    /// This property defines a rule or repeating pattern for an
+    /// exception to a recurrence set.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-4.8.5.2
+    public var exrule: ICalRule?
+    
+    /// This property defines the list of DATE-TIME exceptions for
+    /// recurring events, to-dos, journal entries, or time zone
+    /// definitions.
+    ///
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.1
+    public var exdates: [Date]?
+    
+    /// key: custom property Key
+    /// value: VPropertyEncodable
+    public var extendProperties: [String: VPropertyEncodable]?
+    
+    // TODO: Define properties that can be specified multiple times:
+    // public var attachments
+    // public var attendees
+    // public var categories
+    // public var comments
+    // public var contacts
+    // public var rstatus
+    // public var related
+    
+    public var alarms: [ICalAlarm]
+    
+    public var timeZone: ICalTimeZone?
+    
+    public var children: [VComponent] {
+        guard let timeZone = self.timeZone else { return alarms }
+        
+        var children: [VComponent] = alarms
+        children.insert(timeZone, at: 0)
+        
+        return children
+    }
+    
+    public var properties: [VContentLine?] {
+        [
+            .line(ICalProperty.dtstamp, dtstamp),
+            .line(ICalProperty.uid, uid),
+            .line(ICalProperty.classification, classification),
+            .line(ICalProperty.created, created),
+            .line(ICalProperty.description, description),
+            .line(ICalProperty.dtstart, dtstart),
+            .line(ICalProperty.lastModified, lastModified),
+            .line(ICalProperty.location, location),
+            .line(ICalProperty.organizer, organizer),
+            .line(ICalProperty.priority, priority),
+            .line(ICalProperty.seq, seq),
+            .line(ICalProperty.status, status),
+            .line(ICalProperty.summary, summary),
+            .line(ICalProperty.transp, transp),
+            .line(ICalProperty.url, url),
+            .line(ICalProperty.dtend, dtend),
+            .line(ICalProperty.duration, duration),
+            .line(ICalProperty.recurrenceID, recurrenceID),
+            .line(ICalProperty.rrule, rrule),
+            .lines(ICalProperty.rdates, rdates),
+            .line(ICalProperty.exrule, exrule),
+            .lines(ICalProperty.exdates, exdates)
+        ] + extendPropertiesLine
+    }
+    
+    public var extendPropertiesLine: [VContentLine?] {
+        extendProperties?.map {
+            return .line($0.key, $0.value)
+        } ?? []
+    }
+    
+    public init(
+        dtstamp: Date = Date(),
+        uid: String = UUID().uuidString,
+        classification: String? = nil,
+        created: Date? = Date(),
+        description: String? = nil,
+        dtstart: ICalendarDate? = nil,
+        lastModified: Date? = Date(),
+        location: String? = nil,
+        organizer: String? = nil,
+        priority: Int? = nil,
+        seq: Int? = nil,
+        status: String? = nil,
+        summary: String? = nil,
+        transp: String? = nil,
+        url: URL? = nil,
+        dtend: ICalendarDate? = nil,
+        duration: ICalendarDuration? = nil,
+        recurrenceID: Date? = nil,
+        rrule: ICalRule? = nil,
+        rdates: [Date]? = nil,
+        exrule: ICalRule? = nil,
+        exdates: [Date]? = nil,
+        alarms: [ICalAlarm] = [],
+        timeZone: ICalTimeZone? = nil,
+        extendProperties: [String: VPropertyEncodable]? = nil
+    ) {
+        self.dtstamp = dtstamp
+        self.uid = uid
+        self.classification = classification
+        self.created = created
+        self.description = description
+        self.dtstart = dtstart
+        self.lastModified = lastModified
+        self.location = location
+        self.organizer = organizer
+        self.priority = priority
+        self.seq = seq
+        self.status = status
+        self.summary = summary
+        self.transp = transp
+        self.url = url
+        self.recurrenceID = recurrenceID
+        self.rrule = rrule
+        self.rdates = rdates
+        self.exrule = exrule
+        self.exdates = exdates
+        self.dtend = dtend
+        self.duration = duration
+        self.alarms = alarms
+        self.timeZone = timeZone
+        self.extendProperties = extendProperties
+        
+        assert(dtend == nil || duration == nil, "End date/time and duration must not be specified together!")
+    }
+}
