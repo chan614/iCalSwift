@@ -46,9 +46,10 @@ public struct ICalEvent: VComponent {
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.7.1
     public var created: Date?
     
-    /// This property specifies when the calendar component begins.
+    /// This property provides a more complete description of the
+    /// calendar component than that provided by the "SUMMARY" property.
     ///
-    /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.4
+    /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.5
     public var description: String?
     
     /// This property specifies when the calendar component begins.
