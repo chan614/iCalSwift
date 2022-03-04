@@ -22,17 +22,20 @@ public struct ICalendarDuration: VPropertyEncodable, AdditiveArithmetic {
     public var totalSeconds: Int64
 
     public var parts: (weeks: Int, days: Int, hours: Int, minutes: Int, seconds: Int) {
-        let weeks = totalSeconds / week
-        let rest1 = totalSeconds % week
-        let days = rest1 / day
-        let rest2 = rest1 % day
-        let hours = rest2 / hour
-        let rest3 = rest2 % hour
-        let minutes = rest3 / minute
-        let rest4 = rest3 % minute
-        let seconds = rest4 / second
+        if totalSeconds % week == 0 {
+            let weeks = totalSeconds / week
+            return (weeks: Int(weeks), days: 0, hours: 0, minutes: 0, seconds: 0)
+        }
+        
+        let days = totalSeconds / day
+        let rest1 = totalSeconds % day
+        let hours = rest1 / hour
+        let rest2 = rest1 % hour
+        let minutes = rest2 / minute
+        let rest3 = rest2 % minute
+        let seconds = rest3 / second
 
-        return (weeks: Int(weeks), days: Int(days), hours: Int(hours), minutes: Int(minutes), seconds: Int(seconds))
+        return (weeks: 0, days: Int(days), hours: Int(hours), minutes: Int(minutes), seconds: Int(seconds))
     }
     
     public var vEncoded: String {
@@ -54,6 +57,17 @@ public struct ICalendarDuration: VPropertyEncodable, AdditiveArithmetic {
 
     public init(integerLiteral: Int64) {
         self.init(totalSeconds: integerLiteral)
+    }
+    
+    public init(weeks: Int64, days: Int64, hours: Int64, minutes: Int64, seconds: Int64) {
+        let weeksSec = weeks * week
+        let daysSec = days * day
+        let hoursSec = hours * hour
+        let minutesSec = minutes * minute
+        
+        let totalSeconds = weeksSec + daysSec + hoursSec + minutesSec + seconds
+        
+        self.init(totalSeconds: totalSeconds)
     }
 
     public mutating func negate() {
