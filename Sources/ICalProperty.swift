@@ -47,6 +47,19 @@ public enum ICalProperty {
     public static let trigger = "TRIGGER"
     public static let repetition = "REPEAT"
     public static let attach = "ATTACH"
-    
-    
+
+    public static let frequency = "FREQ"
+    public static let interval = "INTERVAL"
+    public static let until = "UNTIL"
+    public static let count = "COUNT"
+    public static let bySecond = "BYSECOND"
+    public static let byMinute = "BYMINUTE"
+    public static let byHour = "BYHOUR"
+    public static let byDay = "BYDAY"
+    public static let byDayOfMonth = "BYMONTHDAY"
+    public static let byDayOfYear = "BYYEARDAY"
+    public static let byWeekOfYear = "BYWEEKNO"
+    public static let byMonth = "BYMONTH"
+    public static let bySetPos = "BYSETPOS"
+    public static let startOfWorkweek = "WKST"
 }
