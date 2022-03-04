@@ -1,5 +1,5 @@
 //
-//  ICalRecurrenceRule.swift
+//  ICalRule.swift
 //  
 //
 //
@@ -11,8 +11,10 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.3.10
 public struct ICalRule: VPropertyEncodable {
+    
     /// The frequency of the recurrence.
     public var frequency: Frequency
+    
     /// At which interval the recurrence repeats (in terms of the frequency).
     /// E.g. 1 means every hour for an hourly rule, ...
     /// The default value is 1.
@@ -20,11 +22,20 @@ public struct ICalRule: VPropertyEncodable {
 
     /// The end date/time. Must have the same 'ignoreTime'-value as dtstart.
     public var until: ICalendarDate? {
-        willSet { count = nil }
+        willSet {
+            if newValue != nil {
+                count = nil
+            }
+        }
     }
+    
     /// The number of recurrences.
     public var count: Int? {
-        willSet { until = nil }
+        willSet {
+            if newValue != nil {
+                until = nil
+            }
+        }
     }
 
     /// At which seconds of the minute it should occur.
@@ -32,39 +43,47 @@ public struct ICalRule: VPropertyEncodable {
     public var bySecond: [Int]? {
         didSet { assert(bySecond?.allSatisfy { (0...60).contains($0) } ?? true, "by-second rules must be between 0 and 60 (inclusive): \(bySecond ?? [])") }
     }
+    
     /// At which minutes of the hour it should occur.
     /// Must be between 0 and 60 (exclusive).
     public var byMinute: [Int]? {
         didSet { assert(byMinute?.allSatisfy { (0..<60).contains($0) } ?? true, "by-hour rules must be between 0 and 60 (exclusive): \(byMinute ?? [])") }
     }
+    
     /// At which hours of the day it should occur.
     /// Must be between 0 and 24 (exclusive).
     public var byHour: [Int]? {
         didSet { assert(byHour?.allSatisfy { (0..<24).contains($0) } ?? true, "by-hour rules must be between 0 and 24 (exclusive): \(byHour ?? [])") }
     }
+    
     /// At which days (of the week/year) it should occur.
     public var byDay: [Day]?
+    
     /// At which days of the month it should occur. Specifies a COMMA-separated
     /// list of days of the month. Valid values are 1 to 31 or -31 to -1.
     public var byDayOfMonth: [Int]? {
         didSet { assert(byDayOfMonth?.allSatisfy { (1...31).contains(abs($0)) } ?? true, "by-set-pos rules must be between 1 and 31 or -31 and -1: \(byDayOfMonth ?? [])") }
     }
+    
     /// At which days of the year it should occur. Specifies a list of days
     /// of the year.  Valid values are 1 to 366 or -366 to -1.
     public var byDayOfYear: [Int]? {
         didSet { assert(byDayOfYear?.allSatisfy { (1...366).contains(abs($0)) } ?? true, "by-set-pos rules must be between 1 and 366 or -366 and -1: \(byDayOfYear ?? [])") }
     }
+    
     /// At which weeks of the year it should occur. Specificies a list of
     /// ordinals specifying weeks of the year. Valid values are 1 to 53 or -53 to
     /// -1.
     public var byWeekOfYear: [Int]? {
         didSet { assert(byWeekOfYear?.allSatisfy { (1...53).contains(abs($0)) } ?? true, "by-set-pos rules must be between 1 and 53 or -53 and -1: \(byWeekOfYear ?? [])") }
     }
+    
     /// At which months it should occur.
     /// Must be between 1 and 12 (inclusive).
     public var byMonth: [Int]? {
         didSet { assert(byMonth?.allSatisfy { (1...12).contains($0) } ?? true, "by-month-of-year rules must be between 1 and 12: \(byMonth ?? [])") }
     }
+    
     /// Specifies a list of values that corresponds to the nth occurrence within
     /// the set of recurrence instances specified by the rule. By-set-pos
     /// operates on a set of recurrence instances in one interval of the
@@ -76,26 +95,27 @@ public struct ICalRule: VPropertyEncodable {
     public var bySetPos: [Int]? {
         didSet { assert(bySetPos?.allSatisfy { (1...366).contains(abs($0)) } ?? true, "by-set-pos rules must be between 1 and 366 or -366 and -1: \(bySetPos ?? [])") }
     }
+    
     /// The day on which the workweek starts.
     /// Monday by default.
     public var startOfWorkweek: DayOfWeek?
 
     private var properties: [(String, [VEncodable]?)] {
         [
-            ("FREQ", [frequency]),
-            ("INTERVAL", interval.map { [$0] }),
-            ("UNTIL", until.map { [$0] }),
-            ("COUNT", count.map { [$0] }),
-            ("BYSECOND", bySecond),
-            ("BYMINUTE", byMinute),
-            ("BYHOUR", byHour),
-            ("BYDAY", byDay),
-            ("BYMONTHDAY", byDayOfMonth),
-            ("BYYEARDAY", byDayOfYear),
-            ("BYWEEKNO", byWeekOfYear),
-            ("BYMONTH", byMonth),
-            ("BYSETPOS", bySetPos),
-            ("WKST", startOfWorkweek.map { [$0] })
+            (ICalProperty.frequency, [frequency]),
+            (ICalProperty.interval, interval.map { [$0] }),
+            (ICalProperty.until, until.map { [$0] }),
+            (ICalProperty.count, count.map { [$0] }),
+            (ICalProperty.bySecond, bySecond),
+            (ICalProperty.byMinute, byMinute),
+            (ICalProperty.byHour, byHour),
+            (ICalProperty.byDay, byDay),
+            (ICalProperty.byDayOfMonth, byDayOfMonth),
+            (ICalProperty.byDayOfYear, byDayOfYear),
+            (ICalProperty.byWeekOfYear, byWeekOfYear),
+            (ICalProperty.byMonth, byMonth),
+            (ICalProperty.bySetPos, bySetPos),
+            (ICalProperty.startOfWorkweek, startOfWorkweek.map { [$0] })
         ]
     }
 
@@ -154,6 +174,19 @@ public struct ICalRule: VPropertyEncodable {
 
         public static func last(_ dayOfWeek: DayOfWeek) -> Self {
             Self(week: -1, dayOfWeek: dayOfWeek)
+        }
+        
+        public static func from(_ value: String) -> Self? {
+            let index = value.index(value.startIndex, offsetBy: value.count - 2)
+           
+            let dayOfWeekStr = String(value[index...])
+            let weekStr = String(value[..<index])
+            
+            guard let dayOfWeek = DayOfWeek(rawValue: dayOfWeekStr) else {
+                return nil
+            }
+            
+            return .init(week: Int(weekStr), dayOfWeek: dayOfWeek)
         }
     }
 
