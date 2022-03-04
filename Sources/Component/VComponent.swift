@@ -22,10 +22,10 @@ public extension VComponent {
     var children: [VComponent] { [] }
 
     var contentLines: [VContentLine?] {
-        [.line("BEGIN", component)]
+        [.line(ICalProperty.begin, component)]
         + properties
         + children.flatMap(\.contentLines)
-        + [.line("END", component)]
+        + [.line(ICalProperty.end, component)]
     }
 
     var vEncoded: String {
