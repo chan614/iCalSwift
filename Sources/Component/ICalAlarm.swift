@@ -31,7 +31,7 @@ public struct ICalAlarm: VComponent {
     
     public static func audioProp(
         trigger: Date,
-        duration: ICalendarDuration? = nil,
+        duration: ICalDuration? = nil,
         repetition: Int? = nil,
         attach: String? = nil
     ) -> ICalAlarm {
@@ -48,7 +48,7 @@ public struct ICalAlarm: VComponent {
     public static func displayProp(
         trigger: Date,
         description: String,
-        duration: ICalendarDuration? = nil,
+        duration: ICalDuration? = nil,
         repetition: Int? = nil
     ) -> ICalAlarm {
         return .init(
@@ -65,7 +65,7 @@ public struct ICalAlarm: VComponent {
         trigger: Date,
         description: String,
         summary: String,
-        duration: ICalendarDuration? = nil,
+        duration: ICalDuration? = nil,
         repetition: Int? = nil,
         attach: String? = nil
     ) -> ICalAlarm {

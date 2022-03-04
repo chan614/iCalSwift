@@ -54,7 +54,7 @@ public struct ICalEvent: VComponent {
     /// This property specifies when the calendar component begins.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.4
-    public var dtstart: ICalendarDate?
+    public var dtstart: ICalDateTime?
     
     /// This property specifies the date and time that the
     /// information associated with the calendar component was last
@@ -120,8 +120,12 @@ public struct ICalEvent: VComponent {
     /// Mutually exclusive to 'due'.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.2
-    public var dtend: ICalendarDate? {
-        willSet { duration = nil }
+    public var dtend: ICalDateTime? {
+        willSet {
+            if newValue != nil {
+                duration = nil
+            }
+        }
     }
     
     /// This property specifies a positive duration of time.
@@ -129,8 +133,12 @@ public struct ICalEvent: VComponent {
     /// Mutually exclusive to 'due'.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.2.5
-    public var duration: ICalendarDuration? {
-        willSet { dtend = nil }
+    public var duration: ICalDuration? {
+        willSet {
+            if newValue != nil {
+                dtend = nil
+            }
+        }
     }
     
     /// This property is used in conjunction with the "UID" and
@@ -234,7 +242,7 @@ public struct ICalEvent: VComponent {
         classification: String? = nil,
         created: Date? = Date(),
         description: String? = nil,
-        dtstart: ICalendarDate? = nil,
+        dtstart: ICalDateTime? = nil,
         lastModified: Date? = Date(),
         location: String? = nil,
         organizer: String? = nil,
@@ -244,8 +252,8 @@ public struct ICalEvent: VComponent {
         summary: String? = nil,
         transp: String? = nil,
         url: URL? = nil,
-        dtend: ICalendarDate? = nil,
-        duration: ICalendarDuration? = nil,
+        dtend: ICalDateTime? = nil,
+        duration: ICalDuration? = nil,
         recurrenceID: Date? = nil,
         rrule: ICalRule? = nil,
         rdates: [Date]? = nil,

@@ -23,7 +23,7 @@ public struct ICalendar: VComponent {
     /// object.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.7.3
-    public var prodid: ICalendarProductIdentifier
+    public var prodid: ICalProductIdentifier
 
     /// The calendar scale for the calendar information specified
     /// in this iCalendar object.
@@ -65,7 +65,7 @@ public struct ICalendar: VComponent {
     }
 
     public init(
-        prodid: ICalendarProductIdentifier = .init(),
+        prodid: ICalProductIdentifier = .init(),
         calscale: String? = "GREGORIAN",
         method: String? = nil,
         events: [ICalEvent] = [],

@@ -21,7 +21,7 @@ public struct ICalRule: VPropertyEncodable {
     public var interval: Int?
 
     /// The end date/time. Must have the same 'ignoreTime'-value as dtstart.
-    public var until: ICalendarDate? {
+    public var until: ICalDateTime? {
         willSet {
             if newValue != nil {
                 count = nil
@@ -193,7 +193,7 @@ public struct ICalRule: VPropertyEncodable {
     public init(
         frequency: Frequency,
         interval: Int? = nil,
-        until: ICalendarDate? = nil,
+        until: ICalDateTime? = nil,
         count: Int? = nil,
         bySecond: [Int]? = nil,
         byMinute: [Int]? = nil,
