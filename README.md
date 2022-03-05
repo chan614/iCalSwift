@@ -4,10 +4,6 @@
 
 ## Creating a VEvent
 
----
-
- 
-
 ```swift
 let alarm = ICalAlarm.audioProp(
             trigger: Date(),
@@ -49,7 +45,7 @@ print(vEncoded)
 
 This will decode a `VEvent` to
 
-```swift
+```
 BEGIN:VEVENT
 DTSTAMP:20220305T092707Z
 UID:example@gmail.com
