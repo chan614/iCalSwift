@@ -42,11 +42,11 @@ public class StandardComponet: VComponent {
     
     public var properties: [VContentLine?] {
         [
-            .line("TZOFFSETFROM", tzOffsetFrom),
-            .line("RRULE", rrule),
-            .line("DTSTART", dstart),
-            .line("TZNAME", tzName),
-            .line("TZOFFSETTO", tzOffsetTo)
+            .line(ICalProperty.tzOffsetFrom, tzOffsetFrom),
+            .line(ICalProperty.rrule, rrule),
+            .line(ICalProperty.dstart, dstart),
+            .line(ICalProperty.tzName, tzName),
+            .line(ICalProperty.tzOffsetTo, tzOffsetTo)
         ]
     }
     
