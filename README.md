@@ -1,6 +1,6 @@
 # iCalSwift
 
-[iCalendar(RFC 5545)](https://tools.ietf.org/html/rfc5545#section-3.8.7.4) encoder and decoder for Swift
+[iCalendar(RFC 5545)](https://tools.ietf.org/html/rfc5545#section-3.8.7.4) encoder for Swift
 
 ## Creating a VEvent
 
@@ -43,7 +43,7 @@ let vEncoded = event.vEncoded
 print(vEncoded)
 ```
 
-This will decode a `VEvent` to
+This will encode a `VEvent` to
 
 ```
 BEGIN:VEVENT
