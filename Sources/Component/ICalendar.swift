@@ -66,14 +66,14 @@ public struct ICalendar: VComponent {
 
     public init(
         prodid: ICalProductIdentifier = .init(),
-        calscale: String? = "GREGORIAN",
+        calscale: String? = nil,
         method: String? = nil,
         events: [ICalEvent] = [],
         timeZones: [ICalTimeZone] = [],
         alarms: [ICalAlarm] = []
     ) {
         self.prodid = prodid
-        self.calscale = calscale
+        self.calscale = calscale ?? "GREGORIAN"
         self.method = method
         self.events = events
         self.timeZones = timeZones
