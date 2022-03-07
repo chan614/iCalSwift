@@ -19,21 +19,32 @@ public class ICalParser {
     
     // MARK: - Parse
     
-    public func parseCalendar(ics: String) -> ICalendar {
+    public func parseCalendar(ics: String) -> ICalendar? {
         let elements = icsToElements(ics: ics)
         
-        let vEvents = findElement(component: ICalComponent.event, elements: elements)
-        let vAlarams = findElement(component: ICalComponent.alarm, elements: elements)
-        let vTimeZones = findElement(component: ICalComponent.timeZone, elements: elements)
+        guard let prodIDValue = findProperty(name: ICalProperty.prodid, elements: elements)?.value else {
+            return nil
+        }
+        
+        let prodSegments = segmentsOfProdID(prodIDValue)
+        
+        guard !prodSegments.isEmpty else { return nil }
+        
+        let method = findProperty(name: ICalProperty.method, elements: elements)?.value
+        let calscale = findProperty(name: ICalProperty.calscale, elements: elements)?.value
+        
+        let vEvents = findComponent(component: ICalComponent.event, elements: elements)
+        let vAlarams = findComponent(component: ICalComponent.alarm, elements: elements)
+        let vTimeZones = findComponent(component: ICalComponent.timeZone, elements: elements)
         
         let events = buildEvents(elements: vEvents)
         let alarms = buildAlarms(elements: vAlarams)
         let timeZones = buildTimeZones(elements: vTimeZones)
         
         return ICalendar(
-            prodid: .init(),
-            calscale: nil,
-            method: nil,
+            prodid: .init(segments: prodSegments),
+            calscale: method,
+            method: calscale,
             events: events,
             timeZones: timeZones,
             alarms: alarms)
@@ -42,21 +53,21 @@ public class ICalParser {
     public func parseEvent(ics: String) -> [ICalEvent] {
         let elements = icsToElements(ics: ics)
         
-        let vEvents = findElement(component: ICalComponent.event, elements: elements)
+        let vEvents = findComponent(component: ICalComponent.event, elements: elements)
         
         return buildEvents(elements: vEvents)
     }
     
     public func parseAlarm(ics: String) -> [ICalAlarm] {
         let elements = icsToElements(ics: ics)
-        let vAlarams = findElement(component: ICalComponent.alarm, elements: elements)
+        let vAlarams = findComponent(component: ICalComponent.alarm, elements: elements)
         
         return buildAlarms(elements: vAlarams)
     }
     
     public func parseTimeZone(ics: String) -> [ICalTimeZone] {
         let elements = icsToElements(ics: ics)
-        let vTimeZones = findElement(component: ICalComponent.timeZone, elements: elements)
+        let vTimeZones = findComponent(component: ICalComponent.timeZone, elements: elements)
         
         return buildTimeZones(elements: vTimeZones)
     }
@@ -185,12 +196,12 @@ public class ICalParser {
                 return nil
             }
             
-            let standardElement = findElement(
+            let standardElement = findComponent(
                 component: ICalComponent.standard,
                 elements: element.properties
             ).first
             
-            let daylightElement = findElement(
+            let daylightElement = findComponent(
                 component: ICalComponent.daylight,
                 elements: element.properties
             ).first
@@ -262,7 +273,7 @@ public class ICalParser {
     
     /// Recurrence Rule Property
     public func buildRule(value: String) -> ICalRule? {
-        let properties = propertiesOfElement(value: value)
+        let properties = propertiesOfValue(value)
         let frequencyProperty = properties
             .filter { $0.name == ICalProperty.frequency }
             .first
@@ -345,7 +356,7 @@ public class ICalParser {
             .map { ($0[0], $0[1]) }
     }
     
-    public func findElement(
+    public func findComponent(
         component: String,
         elements: [(name: String, value: String)]
     ) -> [ComponentElement] {
@@ -375,11 +386,25 @@ public class ICalParser {
         return founds
     }
     
-    public func propertiesOfElement(value: String) -> [(name: String, value: String)] {
+    
+    public func findProperty(
+        name: String,
+        elements: [(name: String, value: String)]
+    ) -> (name: String, value: String)? {
+        return elements
+            .filter { $0.name == name }
+            .first
+    }
+    
+    public func propertiesOfValue(_ value: String) -> [(name: String, value: String)] {
         return value.components(separatedBy: ";")
             .map { $0.components(separatedBy: "=") }
             .filter { $0.count > 1 }
             .map { ($0[0], $0[1]) }
+    }
+    
+    public func segmentsOfProdID(_ value: String) -> [String] {
+        return value.components(separatedBy: "-//")
     }
     
     public func seperateCommaProperty(value: String) -> [String] {
