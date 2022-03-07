@@ -1,8 +1,8 @@
 # iCalSwift
 
-[iCalendar(RFC 5545)](https://tools.ietf.org/html/rfc5545#section-3.8.7.4) encoder for Swift
+[iCalendar(RFC 5545)](https://tools.ietf.org/html/rfc5545#section-3.8.7.4) encoder and decoder for Swift
 
-## Creating a VEvent
+## Encode a VEvent
 
 ```swift
 let alarm = ICalAlarm.audioProp(
@@ -72,4 +72,24 @@ TRIGGER:20220305T092707Z
 DURATION:P0DT0H50M0S
 END:VALAM
 END:VEVENT
+```
+
+## Decode a VEvent
+
+```swift
+let sampleICS = """
+BEGIN:VEVENT
+DTSTAMP:20220305T092707
+UID:example@gmail.com
+...
+END:VALAM
+END:VEVENT
+"""
+
+let parser = ICalParser()
+let vEvents = parser.parseEvent(ics: sampleICS)
+       
+vEvents.forEach { vEvent in
+    print(vEvent.vEncoded)
+}
 ```
