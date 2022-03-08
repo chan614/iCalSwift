@@ -178,7 +178,7 @@ public struct ICalEvent: VComponent {
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.1
     public var exdates: [Date]?
     
-    /// key: custom property Key
+    /// key: custom property name
     /// value: VPropertyEncodable
     public var extendProperties: [String: VPropertyEncodable]?
     
@@ -194,6 +194,10 @@ public struct ICalEvent: VComponent {
     public var alarms: [ICalAlarm]
     
     public var timeZone: ICalTimeZone?
+    
+    public var isAllDay: Bool {
+        dtstart?.isDateOnly == true
+    }
     
     public var children: [VComponent] {
         guard let timeZone = self.timeZone else { return alarms }
