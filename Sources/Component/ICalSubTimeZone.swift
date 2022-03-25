@@ -35,7 +35,7 @@ public class ICalSubTimeZone: VComponent {
     /// definitions.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.3
-    public var rrule: ICalRule?
+    public var rrule: ICalRRule?
     
     /// This property specifies the customary designation for a
     /// time zone description.
@@ -57,7 +57,7 @@ public class ICalSubTimeZone: VComponent {
         dtstart: Date,
         tzOffsetTo: String,
         tzOffsetFrom: String,
-        rrule: ICalRule? = nil,
+        rrule: ICalRRule? = nil,
         tzName: String? = nil
     ) {
         self.dtstart = dtstart

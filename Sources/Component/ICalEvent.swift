@@ -156,7 +156,7 @@ public struct ICalEvent: VComponent {
     /// definitions.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.3
-    public var rrule: ICalRule?
+    public var rrule: ICalRRule?
     
     /// This property defines the list of DATE-TIME values for
     /// recurring events, to-dos, journal entries, or time zone
@@ -169,7 +169,7 @@ public struct ICalEvent: VComponent {
     /// exception to a recurrence set.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-4.8.5.2
-    public var exrule: ICalRule?
+    public var exrule: ICalRRule?
     
     /// This property defines the list of DATE-TIME exceptions for
     /// recurring events, to-dos, journal entries, or time zone
@@ -260,9 +260,9 @@ public struct ICalEvent: VComponent {
         dtend: ICalDateTime? = nil,
         duration: ICalDuration? = nil,
         recurrenceID: Date? = nil,
-        rrule: ICalRule? = nil,
+        rrule: ICalRRule? = nil,
         rdates: [Date]? = nil,
-        exrule: ICalRule? = nil,
+        exrule: ICalRRule? = nil,
         exdates: [Date]? = nil,
         alarms: [ICalAlarm] = [],
         timeZone: ICalTimeZone? = nil,

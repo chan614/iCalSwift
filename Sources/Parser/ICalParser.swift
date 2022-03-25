@@ -272,19 +272,19 @@ public class ICalParser {
     }
     
     /// Recurrence Rule Property
-    public func buildRule(value: String) -> ICalRule? {
+    public func buildRule(value: String) -> ICalRRule? {
         let properties = propertiesOfValue(value)
         let frequencyProperty = properties
             .filter { $0.name == ICalProperty.frequency }
             .first
         
         guard let frequencyProperty = frequencyProperty,
-              let frequency = ICalRule.Frequency(rawValue: frequencyProperty.value)
+              let frequency = ICalRRule.Frequency(rawValue: frequencyProperty.value)
         else {
             return nil
         }
         
-        var rule = ICalRule(frequency: frequency)
+        var rule = ICalRRule(frequency: frequency)
         
         properties.forEach { property in
             switch property.name {
