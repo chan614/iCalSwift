@@ -165,12 +165,6 @@ public struct ICalEvent: VComponent {
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.2
     public var rdates: [Date]?
     
-    /// This property defines a rule or repeating pattern for an
-    /// exception to a recurrence set.
-    ///
-    /// See https://tools.ietf.org/html/rfc5545#section-4.8.5.2
-    public var exrule: ICalRRule?
-    
     /// This property defines the list of DATE-TIME exceptions for
     /// recurring events, to-dos, journal entries, or time zone
     /// definitions.
@@ -262,7 +256,6 @@ public struct ICalEvent: VComponent {
         recurrenceID: Date? = nil,
         rrule: ICalRRule? = nil,
         rdates: [Date]? = nil,
-        exrule: ICalRRule? = nil,
         exdates: [Date]? = nil,
         alarms: [ICalAlarm] = [],
         timeZone: ICalTimeZone? = nil,
@@ -286,7 +279,6 @@ public struct ICalEvent: VComponent {
         self.recurrenceID = recurrenceID
         self.rrule = rrule
         self.rdates = rdates
-        self.exrule = exrule
         self.exdates = exdates
         self.dtend = dtend
         self.duration = duration

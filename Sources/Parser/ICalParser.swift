@@ -122,8 +122,6 @@ public class ICalParser {
                     event.recurrenceID = buildDateTime(propName: property.name, value: property.value)?.date
                 case ICalProperty.rrule:
                     event.rrule = buildRule(value: property.value)
-                case ICalProperty.exrule:
-                    event.exrule = buildRule(value: property.value)
                 case ICalProperty.rdates:
                     if let date = buildDateTime(propName: property.name, value: property.value)?.date {
                         rdates.append(date)
