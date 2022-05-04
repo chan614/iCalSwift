@@ -7,6 +7,8 @@
 import Foundation
 
 public class ICalParser {
+    public init() {}
+    
     public struct ComponentElement {
         let properties: [(name: String, value: String)]
         
