@@ -224,7 +224,6 @@ public struct ICalEvent: VComponent {
             .line(ICalProperty.recurrenceID, recurrenceID),
             .line(ICalProperty.rrule, rrule),
             .lines(ICalProperty.rdates, rdates),
-            .line(ICalProperty.exrule, exrule),
             .lines(ICalProperty.exdates, exdates)
         ] + extendPropertiesLine
     }
