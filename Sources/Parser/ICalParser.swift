@@ -351,9 +351,9 @@ public class ICalParser {
     public func icsToElements(ics: String) -> [(name: String, value: String)] {
         return ics
             .components(separatedBy: "\n")
-            .map { $0.components(separatedBy: ":") }
+            .map { $0.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true) }
             .filter { $0.count > 1 }
-            .map { ($0[0], $0[1]) }
+            .map { (String($0[0]), String($0[1])) }
     }
     
     public func findComponent(
