@@ -10,7 +10,7 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.4
 public struct ICalendar: VComponent {
-    public let component = ICalComponent.calendar
+    public let component = Constant.Component.calendar
 
     /// The identifier corresponding to the highest version number
     /// or the minimum and maximum range of the iCalendar specification
@@ -51,10 +51,10 @@ public struct ICalendar: VComponent {
     
     public var properties: [VContentLine?] {
         [
-            .line(ICalProperty.version, version),
-            .line(ICalProperty.prodid, prodid),
-            .line(ICalProperty.calscale, calscale),
-            .line(ICalProperty.method, method)
+            .line(Constant.Prop.version, version),
+            .line(Constant.Prop.prodid, prodid),
+            .line(Constant.Prop.calscale, calscale),
+            .line(Constant.Prop.method, method)
         ]
     }
     

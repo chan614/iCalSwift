@@ -11,7 +11,7 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.6.1
 public struct ICalEvent: VComponent {
-    public let component = ICalComponent.event
+    public let component = Constant.Component.event
     
     /// In the case of an iCalendar object that specifies a
     /// "METHOD" property, this property specifies the date and time that
@@ -204,29 +204,28 @@ public struct ICalEvent: VComponent {
     
     public var properties: [VContentLine?] {
         [
-            .line(ICalProperty.dtstamp, dtstamp),
-            .line(ICalProperty.uid, uid),
-            .line(ICalProperty.classification, classification),
-            .line(ICalProperty.created, created),
-            .line(ICalProperty.description, description),
-            .line(ICalProperty.dtstart, dtstart),
-            .line(ICalProperty.lastModified, lastModified),
-            .line(ICalProperty.location, location),
-            .line(ICalProperty.organizer, organizer),
-            .line(ICalProperty.priority, priority),
-            .line(ICalProperty.seq, seq),
-            .line(ICalProperty.status, status),
-            .line(ICalProperty.summary, summary),
-            .line(ICalProperty.transp, transp),
-            .line(ICalProperty.url, url),
-            .line(ICalProperty.dtend, dtend),
-            .line(ICalProperty.duration, duration),
-            .line(ICalProperty.recurrenceID, recurrenceID),
-            .line(ICalProperty.rrule, rrule),
-            .lines(ICalProperty.rdates, rdates),
-            .line(ICalProperty.exrule, exrule),
-            .lines(ICalProperty.exdates, exdates)
-        ] + extendPropertiesLine
+            .line(Constant.Prop.dtstamp, dtstamp),
+            .line(Constant.Prop.uid, uid),
+            .line(Constant.Prop.classification, classification),
+            .line(Constant.Prop.created, created),
+            .line(Constant.Prop.description, description),
+            .line(Constant.Prop.dtstart, dtstart),
+            .line(Constant.Prop.lastModified, lastModified),
+            .line(Constant.Prop.location, location),
+            .line(Constant.Prop.organizer, organizer),
+            .line(Constant.Prop.priority, priority),
+            .line(Constant.Prop.seq, seq),
+            .line(Constant.Prop.status, status),
+            .line(Constant.Prop.summary, summary),
+            .line(Constant.Prop.transp, transp),
+            .line(Constant.Prop.url, url),
+            .line(Constant.Prop.dtend, dtend),
+            .line(Constant.Prop.duration, duration),
+            .line(Constant.Prop.recurrenceID, recurrenceID),
+            .line(Constant.Prop.rrule, rrule),
+            .lines(Constant.Prop.rdates, rdates),
+            .lines(Constant.Prop.exdates, exdates)
+        ]// + extendPropertiesLine
     }
     
     public var extendPropertiesLine: [VContentLine?] {

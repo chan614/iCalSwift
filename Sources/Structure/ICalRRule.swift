@@ -102,20 +102,20 @@ public struct ICalRRule: VPropertyEncodable {
 
     private var properties: [(String, [VEncodable]?)] {
         [
-            (ICalProperty.frequency, [frequency]),
-            (ICalProperty.interval, interval.map { [$0] }),
-            (ICalProperty.until, until.map { [$0] }),
-            (ICalProperty.count, count.map { [$0] }),
-            (ICalProperty.bySecond, bySecond),
-            (ICalProperty.byMinute, byMinute),
-            (ICalProperty.byHour, byHour),
-            (ICalProperty.byDay, byDay),
-            (ICalProperty.byDayOfMonth, byDayOfMonth),
-            (ICalProperty.byDayOfYear, byDayOfYear),
-            (ICalProperty.byWeekOfYear, byWeekOfYear),
-            (ICalProperty.byMonth, byMonth),
-            (ICalProperty.bySetPos, bySetPos),
-            (ICalProperty.startOfWorkweek, startOfWorkweek.map { [$0] })
+            (Constant.Prop.frequency, [frequency]),
+            (Constant.Prop.interval, interval.map { [$0] }),
+            (Constant.Prop.until, until.map { [$0] }),
+            (Constant.Prop.count, count.map { [$0] }),
+            (Constant.Prop.bySecond, bySecond),
+            (Constant.Prop.byMinute, byMinute),
+            (Constant.Prop.byHour, byHour),
+            (Constant.Prop.byDay, byDay),
+            (Constant.Prop.byDayOfMonth, byDayOfMonth),
+            (Constant.Prop.byDayOfYear, byDayOfYear),
+            (Constant.Prop.byWeekOfYear, byWeekOfYear),
+            (Constant.Prop.byMonth, byMonth),
+            (Constant.Prop.bySetPos, bySetPos),
+            (Constant.Prop.startOfWorkweek, startOfWorkweek.map { [$0] })
         ]
     }
 
@@ -147,6 +147,25 @@ public struct ICalRRule: VPropertyEncodable {
         case sunday = "SU"
 
         public var vEncoded: String { rawValue }
+        
+        public var index: Int {
+            switch self {
+            case .monday:
+                return 1
+            case .tuesday:
+                return 2
+            case .wednesday:
+                return 3
+            case .thursday:
+                return 4
+            case .friday:
+                return 5
+            case .saturday:
+                return 6
+            case .sunday:
+                return 0
+            }
+        }
     }
 
     public struct Day: VEncodable {

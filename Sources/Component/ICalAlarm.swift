@@ -11,7 +11,7 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.6.6
 public struct ICalAlarm: VComponent {
-    public let component = ICalComponent.alarm
+    public let component = Constant.Component.alarm
     
     /// This property defines the action to be invoked when an
     /// alarm is triggered.
@@ -56,13 +56,13 @@ public struct ICalAlarm: VComponent {
     
     public var properties: [VContentLine?] {
         [
-            .line(ICalProperty.action, action),
-            .line(ICalProperty.trigger, trigger),
-            .line(ICalProperty.description, description),
-            .line(ICalProperty.summary, summary),
-            .line(ICalProperty.duration, duration),
-            .line(ICalProperty.repetition, repetition),
-            .line(ICalProperty.attach, attach)
+            .line(Constant.Prop.action, action),
+            .line(Constant.Prop.trigger, trigger),
+            .line(Constant.Prop.description, description),
+            .line(Constant.Prop.summary, summary),
+            .line(Constant.Prop.duration, duration),
+            .line(Constant.Prop.repetition, repetition),
+            .line(Constant.Prop.attach, attach)
         ]
     }
     

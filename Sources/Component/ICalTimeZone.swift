@@ -11,7 +11,7 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.6.5
 public struct ICalTimeZone: VComponent {
-    public let component = ICalComponent.timeZone
+    public let component = Constant.Component.timeZone
 
     /// This property defines the time zone, that
     /// will be use in the event.
@@ -33,7 +33,7 @@ public struct ICalTimeZone: VComponent {
 
     public var properties: [VContentLine?] {
         [
-            .line(ICalProperty.tzid, tzid),
+            .line(Constant.Prop.tzid, tzid),
         ]
     }
     

@@ -7,22 +7,15 @@
 import Foundation
 
 public class ICalParser {
-    public struct ComponentElement {
-        let properties: [(name: String, value: String)]
-        
-        func findProperty(name: String) -> (name: String, value: String)? {
-            return properties
-                .filter { $0.name == name }
-                .first
-        }
-    }
+    
+    public init() {}
     
     // MARK: - Parse
     
     public func parseCalendar(ics: String) -> ICalendar? {
-        let elements = icsToElements(ics: ics)
+        let elements = icsToElements(ics)
         
-        guard let prodIDValue = findProperty(name: ICalProperty.prodid, elements: elements)?.value else {
+        guard let prodIDValue = findProperty(name: Constant.Prop.prodid, elements: elements)?.value else {
             return nil
         }
         
@@ -30,16 +23,16 @@ public class ICalParser {
         
         guard !prodSegments.isEmpty else { return nil }
         
-        let method = findProperty(name: ICalProperty.method, elements: elements)?.value
-        let calscale = findProperty(name: ICalProperty.calscale, elements: elements)?.value
+        let method = findProperty(name: Constant.Prop.method, elements: elements)?.value
+        let calscale = findProperty(name: Constant.Prop.calscale, elements: elements)?.value
         
-        let vEvents = findComponent(component: ICalComponent.event, elements: elements)
-        let vAlarams = findComponent(component: ICalComponent.alarm, elements: elements)
-        let vTimeZones = findComponent(component: ICalComponent.timeZone, elements: elements)
+        let vEvents = findComponent(name: Constant.Component.event, elements: elements)
+        let vAlarams = findComponent(name: Constant.Component.alarm, elements: elements)
+        let vTimeZones = findComponent(name: Constant.Component.timeZone, elements: elements)
         
-        let events = buildEvents(elements: vEvents)
-        let alarms = buildAlarms(elements: vAlarams)
-        let timeZones = buildTimeZones(elements: vTimeZones)
+        let events = buildEvents(components: vEvents)
+        let alarms = buildAlarms(components: vAlarams)
+        let timeZones = buildTimeZones(components: vTimeZones)
         
         return ICalendar(
             prodid: .init(segments: prodSegments),
@@ -50,162 +43,118 @@ public class ICalParser {
             alarms: alarms)
     }
     
-    public func parseEvent(ics: String) -> [ICalEvent] {
-        let elements = icsToElements(ics: ics)
+    public func parseEvents(ics: String) -> [ICalEvent] {
+        let elements = icsToElements(ics)
         
-        let vEvents = findComponent(component: ICalComponent.event, elements: elements)
+        let vEvents = findComponent(name: Constant.Component.event, elements: elements)
         
-        return buildEvents(elements: vEvents)
+        return buildEvents(components: vEvents)
     }
     
-    public func parseAlarm(ics: String) -> [ICalAlarm] {
-        let elements = icsToElements(ics: ics)
-        let vAlarams = findComponent(component: ICalComponent.alarm, elements: elements)
+    public func parseAlarms(ics: String) -> [ICalAlarm] {
+        let elements = icsToElements(ics)
+        let vAlarams = findComponent(name: Constant.Component.alarm, elements: elements)
         
-        return buildAlarms(elements: vAlarams)
+        return buildAlarms(components: vAlarams)
     }
     
-    public func parseTimeZone(ics: String) -> [ICalTimeZone] {
-        let elements = icsToElements(ics: ics)
-        let vTimeZones = findComponent(component: ICalComponent.timeZone, elements: elements)
+    public func parseTimeZones(ics: String) -> [ICalTimeZone] {
+        let elements = icsToElements(ics)
+        let vTimeZones = findComponent(name: Constant.Component.timeZone, elements: elements)
         
-        return buildTimeZones(elements: vTimeZones)
+        return buildTimeZones(components: vTimeZones)
+    }
+    
+    public func parseDuration(value: String) -> ICalDuration {
+        return PropertyBuilder.buildDuration(value: value)
+    }
+    
+    public func parseRRule(value: String) -> ICalRRule? {
+        return PropertyBuilder.buildRRule(value: value)
     }
     
     // MARK: - Build component
     
     /// VEvent
-    public func buildEvents(elements: [ComponentElement]) -> [ICalEvent] {
-        return elements.map { element -> ICalEvent in
+    private func buildEvents(components: [ICalComponent]) -> [ICalEvent] {
+        
+        return components.map { component -> ICalEvent in
             var event = ICalEvent()
-            var rdates = [Date]()
-            var exdates = [Date]()
-            var extendProperties = [String: VPropertyEncodable]()
             
-            element.properties.forEach { property in
-                switch property.name {
-                case ICalProperty.dtstamp:
-                    event.dtstamp = buildDateTime(propName: property.name, value: property.value)?.date ?? Date()
-                case ICalProperty.uid:
-                    event.uid = property.value
-                case ICalProperty.classification:
-                    event.classification = property.value
-                case ICalProperty.created:
-                    event.created = buildDateTime(propName: property.name, value: property.value)?.date
-                case ICalProperty.description:
-                    event.description = property.value
-                case ICalProperty.dtstart:
-                    event.dtstart = buildDateTime(propName: property.name, value: property.value)
-                case ICalProperty.lastModified:
-                    event.lastModified = buildDateTime(propName: property.name, value: property.value)?.date
-                case ICalProperty.location:
-                    event.location = property.value
-                case ICalProperty.organizer:
-                    event.organizer = property.value
-                case ICalProperty.priority:
-                    event.priority = Int(property.value)
-                case ICalProperty.seq:
-                    event.seq = Int(property.value)
-                case ICalProperty.status:
-                    event.status = property.value
-                case ICalProperty.summary:
-                    event.summary = property.value
-                case ICalProperty.transp:
-                    event.transp = property.value
-                case ICalProperty.url:
-                    event.url = URL(string: property.value)
-                case ICalProperty.dtend:
-                    event.dtend = buildDateTime(propName: property.name, value: property.value)
-                case ICalProperty.duration:
-                    event.duration = buildDuration(value: property.value)
-                case ICalProperty.recurrenceID:
-                    event.recurrenceID = buildDateTime(propName: property.name, value: property.value)?.date
-                case ICalProperty.rrule:
-                    event.rrule = buildRule(value: property.value)
-                case ICalProperty.rdates:
-                    if let date = buildDateTime(propName: property.name, value: property.value)?.date {
-                        rdates.append(date)
-                    }
-                case ICalProperty.exdates:
-                    if let date = buildDateTime(propName: property.name, value: property.value)?.date {
-                        exdates.append(date)
-                    }
-                default:
-                    extendProperties[property.name] = property.value
-                }
-            }
+            event.alarms = buildAlarms(components: [component])
             
-            if !rdates.isEmpty {
-                event.rdates = rdates
-            }
+            event.dtstamp = component.buildProperty(of: Constant.Prop.dtstamp)?.date ?? Date()
+            event.uid = component.buildProperty(of: Constant.Prop.uid) ?? String()
+            event.classification = component.buildProperty(of: Constant.Prop.classification)
+            event.created = component.buildProperty(of: Constant.Prop.created)?.date ?? Date()
+            event.description = component.buildProperty(of: Constant.Prop.description)
+            event.dtstart = component.buildProperty(of: Constant.Prop.dtstart)
+            event.lastModified = component.buildProperty(of: Constant.Prop.lastModified)?.date ?? Date()
+            event.location = component.buildProperty(of: Constant.Prop.location)
+            event.organizer = component.buildProperty(of: Constant.Prop.organizer)
+            event.priority = component.buildProperty(of: Constant.Prop.priority)
+            event.seq = component.buildProperty(of: Constant.Prop.seq)
+            event.status = component.buildProperty(of: Constant.Prop.status)
+            event.summary = component.buildProperty(of: Constant.Prop.summary)
+            event.transp = component.buildProperty(of: Constant.Prop.transp)
+            event.url = component.buildProperty(of: Constant.Prop.url)
+            event.dtend = component.buildProperty(of: Constant.Prop.dtend)
+            event.duration = component.buildProperty(of: Constant.Prop.duration)
+            event.recurrenceID = component.buildProperty(of: Constant.Prop.recurrenceID)?.date ?? Date()
+            event.rrule = component.buildProperty(of: Constant.Prop.rrule)
             
-            if !exdates.isEmpty {
-                event.exdates = exdates
-            }
-            
-            if !extendProperties.isEmpty {
-                event.extendProperties = extendProperties
-            }
+            // TODO
+            // event.rdates = []
+            // event.exdates = []
+            // event.extendProperties = []
             
             return event
         }
     }
     
     /// VAlarm
-    public func buildAlarms(elements: [ComponentElement]) -> [ICalAlarm] {
-        return elements.compactMap { element -> ICalAlarm? in
-            guard let action = element.findProperty(name: ICalProperty.action)?.value,
-                  let triggerProp = element.findProperty(name: ICalProperty.trigger)
+    private func buildAlarms(components: [ICalComponent]) -> [ICalAlarm] {
+        return components.compactMap { component -> ICalAlarm? in
+            guard let action = component.findProperty(name: Constant.Prop.action)?.value,
+                  let triggerProp = component.findProperty(name: Constant.Prop.trigger)
             else {
                 return nil
             }
             
-            guard let trigger = buildDateTime(propName: triggerProp.name, value: triggerProp.value) else {
+            guard let trigger = PropertyBuilder.buildDateTime(propName: triggerProp.name, value: triggerProp.value) else {
                 return nil
             }
             
             var alarm = ICalAlarm(action: action, trigger: trigger.date)
-            
-            element.properties.forEach { property in
-                switch property.name {
-                case ICalProperty.description:
-                    alarm.description = property.value
-                case ICalProperty.summary:
-                    alarm.summary = property.value
-                case ICalProperty.duration:
-                    alarm.duration = buildDuration(value: property.value)
-                case ICalProperty.repetition:
-                    alarm.repetition = Int(property.value)
-                case ICalProperty.attach:
-                    alarm.attach = property.value
-                default:
-                    break
-                }
-            }
+            alarm.description = component.buildProperty(of: Constant.Prop.description)
+            alarm.summary = component.buildProperty(of: Constant.Prop.summary)
+            alarm.duration = component.buildProperty(of: Constant.Prop.duration)
+            alarm.repetition = component.buildProperty(of: Constant.Prop.repetition)
+            alarm.attach = component.buildProperty(of: Constant.Prop.attach)
             
             return alarm
         }
     }
     
     /// VTimeZone
-    public func buildTimeZones(elements: [ComponentElement]) -> [ICalTimeZone] {
-        return elements.compactMap { element -> ICalTimeZone? in
-            guard let tzid = element.findProperty(name: ICalProperty.tzid)?.value else {
+    private func buildTimeZones(components: [ICalComponent]) -> [ICalTimeZone] {
+        return components.compactMap { component -> ICalTimeZone? in
+            guard let tzid = component.findProperty(name: Constant.Prop.tzid)?.value else {
                 return nil
             }
             
             let standardElement = findComponent(
-                component: ICalComponent.standard,
-                elements: element.properties
+                name: Constant.Component.standard,
+                elements: component.properties
             ).first
             
             let daylightElement = findComponent(
-                component: ICalComponent.daylight,
-                elements: element.properties
+                name: Constant.Component.daylight,
+                elements: component.properties
             ).first
             
-            let standard = buildSubTimeZone(element: standardElement)
-            let daylight = buildSubTimeZone(element: daylightElement)
+            let standard = buildSubTimeZone(component: standardElement)
+            let daylight = buildSubTimeZone(component: daylightElement)
             
             // One of 'standardc' or 'daylightc' MUST occur and each MAY occur more than once.
             if standard == nil && daylight == nil {
@@ -217,17 +166,17 @@ public class ICalParser {
     }
     
     /// TimeZone sub component
-    public func buildSubTimeZone(element: ComponentElement?) -> ICalSubTimeZone? {
-        guard let element = element else { return nil }
+    private func buildSubTimeZone(component: ICalComponent?) -> ICalSubTimeZone? {
+        guard let component = component else { return nil }
         
-        guard let dtStartValue = element.findProperty(name: ICalProperty.dtstart)?.value,
-              let tzOffsetTo = element.findProperty(name: ICalProperty.tzOffsetTo)?.value,
-              let tzOffsetFrom = element.findProperty(name: ICalProperty.tzOffsetFrom)?.value
+        guard let dtStartValue = component.findProperty(name: Constant.Prop.dtstart)?.value,
+              let tzOffsetTo = component.findProperty(name: Constant.Prop.tzOffsetTo)?.value,
+              let tzOffsetFrom = component.findProperty(name: Constant.Prop.tzOffsetFrom)?.value
         else {
             return nil
         }
         
-        guard let dtStart = buildDateTime(propName: ICalProperty.dtstart, value: dtStartValue)?.date else {
+        guard let dtStart = PropertyBuilder.buildDateTime(propName: Constant.Prop.dtstart, value: dtStartValue)?.date else {
             return nil
         }
         
@@ -236,141 +185,40 @@ public class ICalParser {
             tzOffsetTo: tzOffsetTo,
             tzOffsetFrom: tzOffsetFrom)
         
-        element.properties.forEach { property in
-            switch property.name {
-            case ICalProperty.tzName:
-                subTimeZone.tzName = property.value
-            case ICalProperty.rrule:
-                subTimeZone.rrule = buildRule(value: property.value)
-            default:
-                break
-            }
-        }
+        subTimeZone.rrule = component.buildProperty(of: Constant.Prop.rrule)
+        subTimeZone.tzName = component.buildProperty(of: Constant.Prop.tzName)
         
         return subTimeZone
     }
     
-    // MARK: - Build property
-    
-    /// Duration property
-    public func buildDuration(value: String) -> ICalDuration {
-        let weeksStr = matcheDuration(type: "W", duration: value)
-        let daysStr = matcheDuration(type: "D", duration: value)
-        let hoursStr = matcheDuration(type: "H", duration: value)
-        let minutesStr = matcheDuration(type: "M", duration: value)
-        let secondsStr = matcheDuration(type: "S", duration: value)
-        
-        let weeks = Int64(weeksStr) ?? .zero
-        let days = Int64(daysStr) ?? .zero
-        let hours = Int64(hoursStr) ?? .zero
-        let minutes = Int64(minutesStr) ?? .zero
-        let seconds = Int64(secondsStr) ?? .zero
-        
-        return .init(weeks: weeks, days: days, hours: hours, minutes: minutes, seconds: seconds)
-    }
-    
-    /// Recurrence Rule Property
-    public func buildRule(value: String) -> ICalRRule? {
-        let properties = propertiesOfValue(value)
-        let frequencyProperty = properties
-            .filter { $0.name == ICalProperty.frequency }
-            .first
-        
-        guard let frequencyProperty = frequencyProperty,
-              let frequency = ICalRRule.Frequency(rawValue: frequencyProperty.value)
-        else {
-            return nil
-        }
-        
-        var rule = ICalRRule(frequency: frequency)
-        
-        properties.forEach { property in
-            switch property.name {
-            case ICalProperty.interval:
-                rule.interval = Int(property.value)
-            case ICalProperty.until:
-                rule.until = buildDateTime(propName: property.name, value: property.value)
-            case ICalProperty.count:
-                rule.count = Int(property.value)
-            case ICalProperty.bySecond:
-                rule.bySecond = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byMinute:
-                rule.byMinute = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byHour:
-                rule.byHour = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byDay:
-                rule.byDay = seperateCommaProperty(value: property.value).compactMap { .from($0) }
-            case ICalProperty.byDayOfMonth:
-                rule.byDayOfMonth = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byDayOfYear:
-                rule.byDayOfYear = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byWeekOfYear:
-                rule.byWeekOfYear = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.byMonth:
-                rule.byMonth = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.bySetPos:
-                rule.bySetPos = seperateCommaProperty(value: property.value).compactMap { Int($0) }
-            case ICalProperty.startOfWorkweek:
-                rule.startOfWorkweek = .init(rawValue: property.value)
-            default:
-                break
-            }
-        }
-        
-        return rule
-    }
-    
-    /// DateTime / Date property
-    public func buildDateTime(propName: String, value: String) -> ICalDateTime? {
-        let seperatedPropName = propName.components(separatedBy: ";")
-        let isUTC = value.last == "Z"
-        
-        let timeZoneID: String = {
-            if seperatedPropName.count > 1 {
-                return seperatedPropName[1]
-            } else if isUTC {
-                return "UTC"
-            } else {
-                return ""
-            }
-        }()
-        
-        if let date = ICalDateTime.dateFormatter(timeZoneID: timeZoneID).date(from: value) {
-            return .init(date: date, timeZoneID: timeZoneID)
-        } else if let dateOnly = ICalDateTime.dateFormatter(timeZoneID: ICalDateTime.dateOnlyTZID).date(from: value) {
-            return .dateOnly(dateOnly)
-        }
-        
-        return nil
-    }
-    
     // MARK: - Supporting function
     
-    public func icsToElements(ics: String) -> [(name: String, value: String)] {
+    private func icsToElements(_ ics: String) -> [(name: String, value: String)] {
         return ics
+            .replacing(pattern: "(\r?\n)+[ \t]", with: "")
             .components(separatedBy: "\n")
-            .map { $0.components(separatedBy: ":") }
+            .map { $0.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true) }
             .filter { $0.count > 1 }
-            .map { ($0[0], $0[1]) }
+            .map { (String($0[0]), String($0[1])) }
     }
     
-    public func findComponent(
-        component: String,
+    private func findComponent(
+        name: String,
         elements: [(name: String, value: String)]
-    ) -> [ComponentElement] {
-        var founds = [ComponentElement]()
+    ) -> [ICalComponent] {
+        var founds = [ICalComponent]()
         var currentComponent: [(String, String)]?
         
         for element in elements {
-            if element.name == ICalProperty.begin, element.value == component {
+            if element.name == Constant.Prop.begin, element.value == name {
                 if currentComponent == nil {
                     currentComponent = []
                 }
             }
             
-            if element.name == ICalProperty.end, element.value == component {
+            if element.name == Constant.Prop.end, element.value == name {
                 if let currentComponent = currentComponent {
-                    let componentElement = ComponentElement(properties: currentComponent)
+                    let componentElement = ICalComponent(properties: currentComponent)
                     founds.append(componentElement)
                 }
                 currentComponent = nil
@@ -384,47 +232,26 @@ public class ICalParser {
         return founds
     }
     
-    
-    public func findProperty(
+    private func findProperty(
         name: String,
         elements: [(name: String, value: String)]
     ) -> (name: String, value: String)? {
         return elements
-            .filter { $0.name == name }
+            .filter { $0.name.hasPrefix(name) }
             .first
     }
     
-    public func propertiesOfValue(_ value: String) -> [(name: String, value: String)] {
-        return value.components(separatedBy: ";")
-            .map { $0.components(separatedBy: "=") }
-            .filter { $0.count > 1 }
-            .map { ($0[0], $0[1]) }
-    }
-    
-    public func segmentsOfProdID(_ value: String) -> [String] {
+    private func segmentsOfProdID(_ value: String) -> [String] {
         return value.components(separatedBy: "-//")
     }
-    
-    public func seperateCommaProperty(value: String) -> [String] {
-        return value.components(separatedBy: ",")
-    }
-    
-    public func matcheDuration(type: String, duration: String) -> String {
-        do {
-            let pattern = "[0-9]+\(type)"
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let nsString = NSString(string: duration)
-            let results = regex.matches(
-                in: duration,
-                options: [],
-                range: NSRange(location: 0, length: nsString.length))
-            
-            return results
-                .map { nsString.substring(with: $0.range) }
-                .map { String($0.prefix($0.count - 1)) }
-                .first ?? ""
-        } catch {
-            return ""
+}
+
+private extension String {
+    func replacing(pattern: String, with template: String) -> String {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else {
+            return self
         }
+        let range = NSRange(0..<self.utf16.count)
+        return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
     }
 }

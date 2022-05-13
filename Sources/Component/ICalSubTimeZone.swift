@@ -11,7 +11,7 @@ import Foundation
 ///
 /// See https://tools.ietf.org/html/rfc5545#section-3.6.5
 public class ICalSubTimeZone: VComponent {
-    public let component = ICalComponent.daylight
+    public let component = Constant.Component.daylight
     
     /// This property specifies when the calendar component begins.
     ///
@@ -45,11 +45,11 @@ public class ICalSubTimeZone: VComponent {
     
     public var properties: [VContentLine?] {
         [
-            .line(ICalProperty.tzOffsetFrom, tzOffsetFrom),
-            .line(ICalProperty.rrule, rrule),
-            .line(ICalProperty.dtstart, dtstart),
-            .line(ICalProperty.tzName, tzName),
-            .line(ICalProperty.tzOffsetTo, tzOffsetTo)
+            .line(Constant.Prop.tzOffsetFrom, tzOffsetFrom),
+            .line(Constant.Prop.rrule, rrule),
+            .line(Constant.Prop.dtstart, dtstart),
+            .line(Constant.Prop.tzName, tzName),
+            .line(Constant.Prop.tzOffsetTo, tzOffsetTo)
         ]
     }
     
