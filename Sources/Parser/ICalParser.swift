@@ -102,6 +102,7 @@ public class ICalParser {
             event.duration = component.buildProperty(of: Constant.Prop.duration)
             event.recurrenceID = component.buildProperty(of: Constant.Prop.recurrenceID)?.date ?? Date()
             event.rrule = component.buildProperty(of: Constant.Prop.rrule)
+            event.attachments = component.buildProperty(of: Constant.Prop.attach)
             
             // TODO
             // event.rdates = []

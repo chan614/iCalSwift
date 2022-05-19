@@ -172,12 +172,17 @@ public struct ICalEvent: VComponent {
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.1
     public var exdates: [Date]?
     
+    /// This property provides the capability to associate a
+    /// document object with a calendar component.
+    ///
+    /// See https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.1
+    public var attachments: [ICalAttachment]?
+    
     /// key: custom property name
     /// value: VPropertyEncodable
     public var extendProperties: [String: VPropertyEncodable]?
     
     // TODO: Define properties that can be specified multiple times:
-    // public var attachments
     // public var attendees
     // public var categories
     // public var comments
@@ -223,6 +228,7 @@ public struct ICalEvent: VComponent {
             .line(Constant.Prop.duration, duration),
             .line(Constant.Prop.recurrenceID, recurrenceID),
             .line(Constant.Prop.rrule, rrule),
+            .lines(Constant.Prop.attach, attachments),
             .lines(Constant.Prop.rdates, rdates),
             .lines(Constant.Prop.exdates, exdates)
         ]// + extendPropertiesLine

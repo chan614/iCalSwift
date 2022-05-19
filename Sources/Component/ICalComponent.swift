@@ -15,6 +15,11 @@ public struct ICalComponent {
             .first
     }
     
+    func findProperties(name: String) -> [(name: String, value: String)]? {
+        return properties
+            .filter { $0.name.hasPrefix(name) }
+    }
+    
     // DateTime
     func buildProperty(of name: String) -> ICalDateTime? {
         guard let prop = findProperty(name: name) else {
@@ -51,7 +56,7 @@ public struct ICalComponent {
         return PropertyBuilder.buildDuration(value: prop.value)
     }
     
-    // Array value
+    // Array
     func buildProperty(of name: String) -> [String] {
         guard let prop = findProperty(name: name) else {
             return []
@@ -76,5 +81,16 @@ public struct ICalComponent {
         }
         
         return URL(string: prop.value)
+    }
+    
+    // Attachment
+    func buildProperty(of name: String) -> [ICalAttachment]? {
+        guard let properties = findProperties(name: name) else {
+            return nil
+        }
+        
+        return properties.compactMap { prop in
+            PropertyBuilder.buildAttachment(propName: prop.name, value: prop.value)
+        }
     }
 }
