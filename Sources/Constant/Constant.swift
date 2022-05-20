@@ -30,8 +30,8 @@ public enum Constant {
         public static let duration = "DURATION"
         public static let recurrenceID = "RECURRENCE-ID"
         public static let rrule = "RRULE"
-        public static let rdates = "RDATE"
-        public static let exdates = "EXDATE"
+        public static let rdate = "RDATE"
+        public static let exdate = "EXDATE"
         
         public static let version = "VERSION"
         public static let prodid = "PRODID"

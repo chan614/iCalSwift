@@ -11,13 +11,13 @@ extension String {
         guard !isEmpty else { return [""] }
 
         var chunks = [String]()
-        var i = startIndex
+        var currentIndex = startIndex
         var remaining = count
 
-        while i < endIndex {
-            let nextI = index(i, offsetBy: min(length, remaining))
-            chunks.append(String(self[i..<nextI]))
-            i = nextI
+        while currentIndex < endIndex {
+            let nextIndex = index(currentIndex, offsetBy: min(length, remaining))
+            chunks.append(String(self[currentIndex..<nextIndex]))
+            currentIndex = nextIndex
             remaining -= length
         }
 
