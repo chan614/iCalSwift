@@ -102,12 +102,11 @@ public class ICalParser {
             event.duration = component.buildProperty(of: Constant.Prop.duration)
             event.recurrenceID = component.buildProperty(of: Constant.Prop.recurrenceID)?.date ?? Date()
             event.rrule = component.buildProperty(of: Constant.Prop.rrule)
+            event.rdates = component.buildProperty(of: Constant.Prop.rdates)
+            event.exdates = component.buildProperty(of: Constant.Prop.exdates)
             event.attachments = component.buildProperty(of: Constant.Prop.attach)
             
-            // TODO
-            // event.rdates = []
-            // event.exdates = []
-            // event.extendProperties = []
+            event.extendProperties = component.findExtendProperties()
             
             return event
         }
@@ -243,7 +242,9 @@ public class ICalParser {
     }
     
     private func segmentsOfProdID(_ value: String) -> [String] {
-        return value.components(separatedBy: "-//")
+        return value
+            .components(separatedBy: "//")
+            .filter { !$0.isEmpty && $0 != "-" }
     }
 }
 

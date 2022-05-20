@@ -31,7 +31,6 @@ public enum Constant {
         public static let recurrenceID = "RECURRENCE-ID"
         public static let rrule = "RRULE"
         public static let rdates = "RDATE"
-        public static let exrule =  "EXRULE"
         public static let exdates = "EXDATE"
         
         public static let version = "VERSION"
@@ -72,5 +71,11 @@ public enum Constant {
         public static let timeZone = "VTIMEZONE"
         public static let daylight = "DAYLIGHT"
         public static let standard = "STANDARD"
+    }
+    
+    public enum Format {
+        public static let dateOnly = "yyyyMMdd"
+        public static let dt = "yyyyMMdd'T'HHmmss"
+        public static let utc = "yyyyMMdd'T'HHmmss'Z'"
     }
 }

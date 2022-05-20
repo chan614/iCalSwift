@@ -18,7 +18,7 @@ public struct ICalProductIdentifier: VPropertyEncodable {
     }
 
     //TODO add UUID
-    public init(segments: [String] = ["swift-calendar", "icalendarkit", "EN"]) {
+    public init(segments: [String] = ["calendar", "iCalSwift", "EN"]) {
         self.segments = segments
     }
 }

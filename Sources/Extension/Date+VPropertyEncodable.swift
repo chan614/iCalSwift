@@ -8,6 +8,6 @@ import Foundation
 
 extension Date: VPropertyEncodable {
     public var vEncoded: String {
-        ICalDateTime(date: self).vEncoded
+        ICalDateTime(type: .dateTime, date: self, tzid: nil).vEncoded
     }
 }

@@ -36,7 +36,7 @@ public struct VContentLine: VEncodable {
             
             return chunks
                 .enumerated()
-                .map { (i, c) in i > 0 ? " \(c)" : c }
+                .map { (index, chunk) in index > 0 ? " \(chunk)" : chunk }
                 .map { "\($0)\r\n" }
                 .joined()
         }.joined()
@@ -67,7 +67,7 @@ public struct VContentLine: VEncodable {
         return .init(key: key, values: [value])
     }
     
-    private func quote(_ s: String, if predicate: Bool) -> String {
-        predicate ? "\"\(s)\"" : s
+    private func quote(_ str: String, if predicate: Bool) -> String {
+        predicate ? "\"\(str)\"" : str
     }
 }

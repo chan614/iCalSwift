@@ -163,14 +163,14 @@ public struct ICalEvent: VComponent {
     /// definitions.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.2
-    public var rdates: [Date]?
+    public var rdates: ICalDateTimes?
     
     /// This property defines the list of DATE-TIME exceptions for
     /// recurring events, to-dos, journal entries, or time zone
     /// definitions.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.5.1
-    public var exdates: [Date]?
+    public var exdates: ICalDateTimes?
     
     /// This property provides the capability to associate a
     /// document object with a calendar component.
@@ -228,10 +228,10 @@ public struct ICalEvent: VComponent {
             .line(Constant.Prop.duration, duration),
             .line(Constant.Prop.recurrenceID, recurrenceID),
             .line(Constant.Prop.rrule, rrule),
-            .lines(Constant.Prop.attach, attachments),
-            .lines(Constant.Prop.rdates, rdates),
-            .lines(Constant.Prop.exdates, exdates)
-        ]// + extendPropertiesLine
+            .line(Constant.Prop.rdates, rdates),
+            .line(Constant.Prop.exdates, exdates),
+            .lines(Constant.Prop.attach, attachments)
+        ] + extendPropertiesLine
     }
     
     public var extendPropertiesLine: [VContentLine?] {
@@ -260,8 +260,8 @@ public struct ICalEvent: VComponent {
         duration: ICalDuration? = nil,
         recurrenceID: Date? = nil,
         rrule: ICalRRule? = nil,
-        rdates: [Date]? = nil,
-        exdates: [Date]? = nil,
+        rdates: ICalDateTimes? = nil,
+        exdates: ICalDateTimes? = nil,
         alarms: [ICalAlarm] = [],
         timeZone: ICalTimeZone? = nil,
         extendProperties: [String: VPropertyEncodable]? = nil

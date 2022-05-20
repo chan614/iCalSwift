@@ -16,8 +16,17 @@ public struct ICalComponent {
     }
     
     func findProperties(name: String) -> [(name: String, value: String)]? {
-        return properties
-            .filter { $0.name.hasPrefix(name) }
+        return properties.filter { $0.name.hasPrefix(name) }
+    }
+    
+    func findExtendProperties() -> [String: VPropertyEncodable] {
+        var dict = [String: VPropertyEncodable]()
+        
+        properties
+            .filter { $0.name.hasPrefix("X-") }
+            .forEach { dict[$0.name] = $0.value }
+        
+        return dict
     }
     
     // DateTime
@@ -92,5 +101,14 @@ public struct ICalComponent {
         return properties.compactMap { prop in
             PropertyBuilder.buildAttachment(propName: prop.name, value: prop.value)
         }
+    }
+    
+    // DateTimes
+    func buildProperty(of name: String) -> ICalDateTimes? {
+        guard let prop = findProperty(name: name) else {
+            return nil
+        }
+        
+        return PropertyBuilder.buildDateTimes(propName: prop.name, value: prop.value)
     }
 }

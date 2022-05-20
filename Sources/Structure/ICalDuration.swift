@@ -6,11 +6,11 @@
 
 import Foundation
 
-fileprivate let second: Int64 = 1
-fileprivate let minute: Int64 = second * 60
-fileprivate let hour: Int64 = minute * 60
-fileprivate let day: Int64 = hour * 24
-fileprivate let week: Int64 = day * 7
+fileprivate let second: Int = 1
+fileprivate let minute: Int = second * 60
+fileprivate let hour: Int = minute * 60
+fileprivate let day: Int = hour * 24
+fileprivate let week: Int = day * 7
 
 /// Specifies a positive duration of time.
 ///
@@ -19,7 +19,7 @@ public struct ICalDuration: VPropertyEncodable, AdditiveArithmetic {
     public static let zero: ICalDuration = ICalDuration(totalSeconds: 0)
 
     /// The total seconds of this day.
-    public var totalSeconds: Int64
+    public var totalSeconds: Int
 
     public var parts: (weeks: Int, days: Int, hours: Int, minutes: Int, seconds: Int) {
         if totalSeconds % week == 0 {
@@ -51,15 +51,15 @@ public struct ICalDuration: VPropertyEncodable, AdditiveArithmetic {
         return "\(totalSeconds >= 0 ? "" : "-")P\(encodedDuration)"
     }
 
-    public init(totalSeconds: Int64 = 0) {
+    public init(totalSeconds: Int = 0) {
         self.totalSeconds = totalSeconds
     }
 
-    public init(integerLiteral: Int64) {
+    public init(integerLiteral: Int) {
         self.init(totalSeconds: integerLiteral)
     }
     
-    public init(weeks: Int64, days: Int64, hours: Int64, minutes: Int64, seconds: Int64) {
+    public init(weeks: Int, days: Int, hours: Int, minutes: Int, seconds: Int) {
         let weeksSec = weeks * week
         let daysSec = days * day
         let hoursSec = hours * hour
@@ -87,22 +87,22 @@ public struct ICalDuration: VPropertyEncodable, AdditiveArithmetic {
     }
 
     public static func weeks(_ weeks: Int) -> Self {
-        Self(totalSeconds: Int64(weeks) * week)
+        Self(totalSeconds: weeks * week)
     }
 
     public static func days(_ days: Int) -> Self {
-        Self(totalSeconds: Int64(days) * day)
+        Self(totalSeconds: days * day)
     }
 
     public static func hours(_ hours: Int) -> Self {
-        Self(totalSeconds: Int64(hours) * hour)
+        Self(totalSeconds: hours * hour)
     }
 
     public static func minutes(_ minutes: Int) -> Self {
-        Self(totalSeconds: Int64(minutes) * minute)
+        Self(totalSeconds: minutes * minute)
     }
     
     public static func seconds(_ seconds: Int) -> Self {
-        Self(totalSeconds: Int64(seconds) * second)
+        Self(totalSeconds: seconds * second)
     }
 }

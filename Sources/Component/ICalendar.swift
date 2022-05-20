@@ -36,8 +36,6 @@ public struct ICalendar: VComponent {
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.7.2
     public var method: String?
-    
-    public var extendProperties: [String: VPropertyEncodable]?
 
     public var events: [ICalEvent]
     public var timeZones: [ICalTimeZone]
@@ -56,12 +54,6 @@ public struct ICalendar: VComponent {
             .line(Constant.Prop.calscale, calscale),
             .line(Constant.Prop.method, method)
         ]
-    }
-    
-    private var extendPropertiesLine: [VContentLine?] {
-        extendProperties?.map {
-            return .line($0.key, $0.value)
-        } ?? []
     }
 
     public init(

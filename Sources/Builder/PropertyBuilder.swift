@@ -6,7 +6,7 @@
 
 import Foundation
 
-class PropertyBuilder {
+struct PropertyBuilder {
     
     /// Duration property
     static func buildDuration(value: String) -> ICalDuration {
@@ -16,19 +16,19 @@ class PropertyBuilder {
         let minutesStr = matcheDuration(type: "M", duration: value)
         let secondsStr = matcheDuration(type: "S", duration: value)
         
-        let weeks = Int64(weeksStr) ?? .zero
-        let days = Int64(daysStr) ?? .zero
-        let hours = Int64(hoursStr) ?? .zero
-        let minutes = Int64(minutesStr) ?? .zero
-        let seconds = Int64(secondsStr) ?? .zero
+        let weeks = Int(weeksStr) ?? .zero
+        let days = Int(daysStr) ?? .zero
+        let hours = Int(hoursStr) ?? .zero
+        let minutes = Int(minutesStr) ?? .zero
+        let seconds = Int(secondsStr) ?? .zero
         
         return .init(weeks: weeks, days: days, hours: hours, minutes: minutes, seconds: seconds)
     }
     
     /// Recurrence Rule Property
     static func buildRRule(value: String) -> ICalRRule? {
-        let properties = propertiesOfValue(value)
-        let frequencyProperty = properties
+        let params = paramsOfValue(value)
+        let frequencyProperty = params
             .filter { $0.name == Constant.Prop.frequency }
             .first
         
@@ -40,7 +40,7 @@ class PropertyBuilder {
         
         var rule = ICalRRule(frequency: frequency)
         
-        properties.forEach { property in
+        params.forEach { property in
             switch property.name {
             case Constant.Prop.interval:
                 rule.interval = Int(property.value)
@@ -78,26 +78,54 @@ class PropertyBuilder {
     
     /// DateTime / Date property
     static func buildDateTime(propName: String, value: String) -> ICalDateTime? {
-        let seperatedPropName = propName.components(separatedBy: ";")
-        let isUTC = value.last == "Z"
+        let params = paramsOfValue(propName)
+        let valueType = dateValueType(params: params)
+        let tzid = timeZoneID(params: params)
         
-        let timeZoneID: String = {
-            if seperatedPropName.count > 1 {
-                return seperatedPropName[1]
-            } else if isUTC {
-                return "UTC"
-            } else {
-                return ""
-            }
-        }()
-        
-        if let date = ICalDateTime.dateFormatter(timeZoneID: timeZoneID).date(from: value) {
-            return .init(date: date, timeZoneID: timeZoneID)
-        } else if let dateOnly = ICalDateTime.dateFormatter(timeZoneID: ICalDateTime.dateOnlyTZID).date(from: value) {
-            return .dateOnly(dateOnly)
+        guard let date = DateTimeUtil.dateFormatter(type: valueType, tzid: tzid).date(from: value) else {
+            return nil
         }
         
-        return nil
+        switch valueType {
+        case .date:
+            return .dateOnly(date)
+        default:
+            return .dateTime(date, tzid: tzid)
+        }
+    }
+    
+    static func buildAttachment(propName: String, value: String) -> ICalAttachment? {
+        let params = paramsOfValue(propName)
+            .map { ($0.name, [$0.value]) }
+        
+        return .init(parameters: params, value: value)
+    }
+    
+    static func buildDateTimes(propName: String, value: String) -> ICalDateTimes? {
+        let params = paramsOfValue(propName)
+        let valueType = dateValueType(params: params)
+        let tzid = timeZoneID(params: params)
+        
+        let periods = [ICalPeriod]()
+        let dates = value
+            .components(separatedBy: ",")
+            .compactMap {
+                DateTimeUtil.dateFormatter(type: valueType, tzid: tzid).date(from: $0)
+            }
+        
+        if dates.isEmpty && periods.isEmpty {
+            return nil
+        }
+        
+        switch valueType {
+        case .date:
+            return .dateOnly(dates)
+        case .dateTime:
+            return .dateTime(dates, tzid: tzid)
+        case .period:
+            // TODO
+            return .period([], tzid: tzid)
+        }
     }
     
     // MARK: - Supporting function
@@ -111,7 +139,7 @@ class PropertyBuilder {
             .first
     }
     
-    private static func propertiesOfValue(_ value: String) -> [(name: String, value: String)] {
+    private static func paramsOfValue(_ value: String) -> [(name: String, value: String)] {
         return value.components(separatedBy: ";")
             .map { $0.components(separatedBy: "=") }
             .filter { $0.count > 1 }
@@ -139,5 +167,22 @@ class PropertyBuilder {
         } catch {
             return ""
         }
+    }
+    
+    private static func dateValueType(params: [(name: String, value: String)]) -> DateValueType {
+        let valueType = params.first { $0.name == "VALUE" }?.value ?? ""
+        
+        switch valueType {
+        case "DATE":
+            return .date
+        case "PERIOD":
+            return .period
+        default:
+            return .dateTime
+        }
+    }
+    
+    private static func timeZoneID(params: [(name: String, value: String)]) -> String? {
+        return params.first { $0.name == "TZID" }?.value
     }
 }
