@@ -19,8 +19,8 @@ public struct ICalComponent {
         return properties.filter { $0.name.hasPrefix(name) }
     }
     
-    func findExtendProperties() -> [String: VPropertyEncodable] {
-        var dict = [String: VPropertyEncodable]()
+    func findExtendProperties() -> [String: String] {
+        var dict = [String: String]()
         
         properties
             .filter { $0.name.hasPrefix("X-") }

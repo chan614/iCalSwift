@@ -179,8 +179,8 @@ public struct ICalEvent: VComponent {
     public var attachments: [ICalAttachment]?
     
     /// key: custom property name
-    /// value: VPropertyEncodable
-    public var extendProperties: [String: VPropertyEncodable]?
+    /// value: String
+    public var extendProperties: [String: String]?
     
     // TODO: Define properties that can be specified multiple times:
     // public var attendees
@@ -264,7 +264,8 @@ public struct ICalEvent: VComponent {
         exdate: ICalDateTimes? = nil,
         alarms: [ICalAlarm] = [],
         timeZone: ICalTimeZone? = nil,
-        extendProperties: [String: VPropertyEncodable]? = nil
+        attachments: [ICalAttachment]? = nil,
+        extendProperties: [String: String]? = nil
     ) {
         self.dtstamp = dtstamp
         self.uid = uid
@@ -289,6 +290,7 @@ public struct ICalEvent: VComponent {
         self.duration = duration
         self.alarms = alarms
         self.timeZone = timeZone
+        self.attachments = attachments
         self.extendProperties = extendProperties
         
         assert(dtend == nil || duration == nil, "End date/time and duration must not be specified together!")
