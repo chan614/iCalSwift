@@ -9,9 +9,13 @@
 /// additional parameters in the content line.
 public protocol VPropertyEncodable: VEncodable {
     /// The additional parameters.
-    var parameters: [(String, [String])] { get }
+    var parameters: [ICalParameter] { get }
 }
 
 public extension VPropertyEncodable {
-    var parameters: [(String, [String])] { [] }
+    var parameters: [ICalParameter] { [] }
+    
+    func parameter(key: String) -> ICalParameter? {
+        parameters.first(where: { $0.key == key })
+    }
 }

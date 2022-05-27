@@ -95,8 +95,8 @@ struct PropertyBuilder {
     }
     
     static func buildAttachment(propName: String, value: String) -> ICalAttachment? {
-        let params = paramsOfValue(propName)
-            .map { ($0.name, [$0.value]) }
+        let params: [ICalParameter] = paramsOfValue(propName)
+            .map { .init(key: $0.name, values: [$0.value]) }
         
         return .init(parameters: params, value: value)
     }

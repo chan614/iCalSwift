@@ -30,21 +30,21 @@ struct DateTimeUtil {
         return formatter
     }
     
-    static func params(type: DateValueType, tzid: String?) -> [(String, [String])] {
-        let valueParam: (String, [String])? = {
+    static func params(type: DateValueType, tzid: String?) -> [ICalParameter] {
+        let valueParam: ICalParameter? = {
             switch type {
             case .date:
-                return ("VALUE", ["DATE"])
+                return .init(key: "VALUE", values: ["DATE"])
             case .dateTime:
                 return nil
             case .period:
-                return ("VALUE", ["PERIOD"])
+                return .init(key: "VALUE", values: ["PERIOD"])
             }
         }()
         
-        let tzidParam: (String, [String])? = {
+        let tzidParam: ICalParameter? = {
             if let tzid = tzid {
-                return ("TZID", [tzid])
+                return .init(key: "TZID", values: [tzid])
             } else {
                 return nil
             }

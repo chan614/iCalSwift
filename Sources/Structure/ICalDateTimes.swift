@@ -26,7 +26,7 @@ public struct ICalDateTimes: VPropertyEncodable {
         }
     }
     
-    public var parameters: [(String, [String])] {
+    public var parameters: [ICalParameter] {
         DateTimeUtil.params(type: type, tzid: tzid)
     }
 

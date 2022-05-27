@@ -49,7 +49,7 @@ public struct ICalAlarm: VComponent {
     public var repetition: Int?
     
     /// This property provides the capability to associate a
-    ///document object with a calendar component.
+    /// document object with a calendar component.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.1.1
     public var attach: String?

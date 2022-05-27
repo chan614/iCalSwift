@@ -16,11 +16,12 @@ public struct VContentLine: VEncodable {
     public var vEncoded: String {
         let encoded = values.map { value in
             let paramsToString = value.parameters
-                .map { ";\($0.0)=\(quote($0.1.joined(separator: ","), if: $0.1.count > 1))" }
+                .map { ";\($0.key)=\(quote($0.values.joined(separator: ","), if: $0.values.count > 1))" }
                 .joined()
-            let line = "\(key)\(paramsToString):\(value.vEncoded)"
             
+            let line = "\(key)\(paramsToString):\(value.vEncoded)"
             let chunks = line.chunks(ofLength: Self.maxLength)
+            
             assert(!chunks.isEmpty)
             
             // From the RFC (section 3.1):
