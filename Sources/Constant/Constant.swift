@@ -67,7 +67,7 @@ public enum Constant {
     public enum Component {
         public static let calendar = "VCALENDAR"
         public static let event = "VEVENT"
-        public static let alarm = "VALAM"
+        public static let alarm = "VALARM"
         public static let timeZone = "VTIMEZONE"
         public static let daylight = "DAYLIGHT"
         public static let standard = "STANDARD"
