@@ -10,13 +10,13 @@ struct DateTimeUtil {
     static func dateFormatter(type: DateValueType, tzid: String?) -> DateFormatter {
         let formatter = DateFormatter()
         
-        formatter.timeZone = {
-            if let tzid = tzid {
-                return .init(identifier: tzid)
-            } else {
-                return .init(secondsFromGMT: 0)
-            }
-        }()
+        if let tzid = tzid {
+            formatter.timeZone = .init(identifier: tzid)
+        } else if .date == type {
+            formatter.timeZone = .current
+        } else {
+            formatter.timeZone = .init(abbreviation: "UTC")
+        }
         
         formatter.dateFormat = {
             switch type {
