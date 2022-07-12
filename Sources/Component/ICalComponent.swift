@@ -8,6 +8,7 @@ import Foundation
 
 public struct ICalComponent {
     let properties: [(name: String, value: String)]
+    let children: [(name: String, value: String)]
     
     func findProperty(name: String) -> (name: String, value: String)? {
         return properties

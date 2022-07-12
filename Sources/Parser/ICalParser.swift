@@ -6,7 +6,7 @@
 
 import Foundation
 
-public class ICalParser {
+public struct ICalParser {
     
     public init() {}
     
@@ -81,7 +81,8 @@ public class ICalParser {
         return components.map { component -> ICalEvent in
             var event = ICalEvent()
             
-            event.alarms = buildAlarms(components: [component])
+            let vAlarams = findComponent(name: Constant.Component.alarm, elements: component.children)
+            event.alarms = buildAlarms(components: vAlarams)
             
             event.dtstamp = component.buildProperty(of: Constant.Prop.dtstamp)?.date ?? Date()
             event.uid = component.buildProperty(of: Constant.Prop.uid) ?? String()
@@ -192,7 +193,7 @@ public class ICalParser {
     }
     
     // MARK: - Supporting function
-    
+
     private func icsToElements(_ ics: String) -> [(name: String, value: String)] {
         return ics
             .replacing(pattern: "(\r?\n)+[ \t]", with: "")
@@ -208,6 +209,7 @@ public class ICalParser {
     ) -> [ICalComponent] {
         var founds = [ICalComponent]()
         var currentComponent: [(String, String)]?
+        var childComponent: [(String, String)]?
         
         for element in elements {
             if element.name == Constant.Prop.begin, element.value == name {
@@ -216,16 +218,27 @@ public class ICalParser {
                 }
             }
             
+            if currentComponent != nil {
+                if element.name == Constant.Prop.begin, element.value != name {
+                    childComponent = []
+                }
+                
+                if childComponent != nil {
+                    childComponent?.append(element)
+                } else {
+                    currentComponent?.append(element)
+                }
+            }
+            
             if element.name == Constant.Prop.end, element.value == name {
                 if let currentComponent = currentComponent {
-                    let componentElement = ICalComponent(properties: currentComponent)
+                    let componentElement = ICalComponent(
+                        properties: currentComponent,
+                        children: childComponent ?? [])
                     founds.append(componentElement)
                 }
                 currentComponent = nil
-            }
-            
-            if currentComponent != nil {
-                currentComponent?.append(element)
+                childComponent = nil
             }
         }
         
