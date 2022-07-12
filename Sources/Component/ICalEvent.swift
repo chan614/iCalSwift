@@ -149,7 +149,7 @@ public struct ICalEvent: VComponent {
     /// of the recurrence instance.
     ///
     /// See https://tools.ietf.org/html/rfc5545#section-3.8.4.4
-    public var recurrenceID: Date?
+    public var recurrenceID: ICalDateTime?
     
     /// This property defines a rule or repeating pattern for
     /// recurring events, to-dos, journal entries, or time zone
@@ -258,7 +258,7 @@ public struct ICalEvent: VComponent {
         url: URL? = nil,
         dtend: ICalDateTime? = nil,
         duration: ICalDuration? = nil,
-        recurrenceID: Date? = nil,
+        recurrenceID: ICalDateTime? = nil,
         rrule: ICalRRule? = nil,
         rdate: ICalDateTimes? = nil,
         exdate: ICalDateTimes? = nil,

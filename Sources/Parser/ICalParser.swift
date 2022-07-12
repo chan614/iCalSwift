@@ -100,7 +100,7 @@ public class ICalParser {
             event.url = component.buildProperty(of: Constant.Prop.url)
             event.dtend = component.buildProperty(of: Constant.Prop.dtend)
             event.duration = component.buildProperty(of: Constant.Prop.duration)
-            event.recurrenceID = component.buildProperty(of: Constant.Prop.recurrenceID)?.date ?? Date()
+            event.recurrenceID = component.buildProperty(of: Constant.Prop.recurrenceID)
             event.rrule = component.buildProperty(of: Constant.Prop.rrule)
             event.rdate = component.buildProperty(of: Constant.Prop.rdate)
             event.exdate = component.buildProperty(of: Constant.Prop.exdate)
