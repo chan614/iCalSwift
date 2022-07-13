@@ -55,6 +55,10 @@ public struct ICalComponent {
         }
         
         return prop.value
+            .replacing(pattern: "\\\\,", with: ",")
+            .replacing(pattern: "\\\\;", with: ";")
+            .replacing(pattern: "\\\\[nN]", with: "\n")
+            .replacing(pattern: "\\\\{2}", with: "\\\\")
     }
     
     // Duration

@@ -260,13 +260,3 @@ public struct ICalParser {
             .filter { !$0.isEmpty && $0 != "-" }
     }
 }
-
-private extension String {
-    func replacing(pattern: String, with template: String) -> String {
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else {
-            return self
-        }
-        let range = NSRange(0..<self.utf16.count)
-        return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
-    }
-}
