@@ -18,4 +18,8 @@ public struct ICalAttachment: VPropertyEncodable {
         value
     }
     
+    public init(parameters: [ICalParameter], value: String) {
+        self.parameters = parameters
+        self.value = value
+    }
 }
