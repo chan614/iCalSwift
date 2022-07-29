@@ -8,8 +8,8 @@ import Foundation
 
 public struct ICalParameter: Equatable {
     public let key: String
-    public var values: [String]
-    
+    public let values: [String]
+
     public init(key: String, values: [String]) {
         self.key = key
         self.values = values

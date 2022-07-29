@@ -15,7 +15,7 @@ public protocol VPropertyEncodable: VEncodable {
 public extension VPropertyEncodable {
     var parameters: [ICalParameter] { [] }
     
-    func parameter(key: String) -> ICalParameter? {
+    func parameter(_ key: String) -> ICalParameter? {
         parameters.first(where: { $0.key == key })
     }
 }
