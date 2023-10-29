@@ -195,12 +195,11 @@ public struct ICalParser {
     // MARK: - Supporting function
 
     private func icsToElements(_ ics: String) -> [(name: String, value: String)] {
-        return ics
-            .replacing(pattern: "(\r?\n)+[ \t]", with: "")
-            .components(separatedBy: "\n")
-            .map { $0.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true) }
-            .filter { $0.count > 1 }
-            .map { (String($0[0]), String($0[1])) }
+        let icsReplaced = ics.replacing(pattern: "(\r?\n)+[ \t]", with: "")
+        let icsComponents = icsReplaced.components(separatedBy: "\n")
+        let icsComponentsMapped = icsComponents.map { $0.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true) }
+        let icsComponentsFiltered = icsComponentsMapped.filter { $0.count > 1 }
+        return icsComponentsFiltered.map { (String($0[0]), String($0[1])) }
     }
     
     private func findComponent(
