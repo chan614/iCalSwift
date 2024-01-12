@@ -87,7 +87,7 @@ END:VEVENT
 """
 
 let parser = ICalParser()
-let vEvents = parser.parseEvent(ics: sampleICS)
+let vEvents = parser.parseEvents(ics: sampleICS)
        
 vEvents.forEach { vEvent in
     print(vEvent.vEncoded)
